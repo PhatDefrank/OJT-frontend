@@ -1,0 +1,74 @@
+:root {
+  --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* "Minimal Yet Warm" palette: #EAE7DC #D8C3A5 #8E8D8A #E98074 #E85A4F */
+  --palette-sand: #EAE7DC;
+  --palette-tan: #D8C3A5;
+  --palette-stone: #8E8D8A;
+  --palette-salmon: #E98074;
+  --palette-coral: #E85A4F;
+
+  /* Surfaces */
+  --bg-deep: #EAE7DC;
+  --bg-dark: #E3DFD2;
+  --bg-surface: #F4F1EA;
+  --bg-card: rgba(250, 248, 243, 0.92);
+  --bg-card-hover: rgba(216, 195, 165, 0.22);
+
+  /* Accents (primary = coral, secondary = salmon, tertiary = tan) */
+  --color-primary: #E85A4F;
+  --color-primary-hover: #D94C41;
+  --color-primary-strong: #C2453B;
+  --color-primary-glow: rgba(232, 90, 79, 0.28);
+  --color-secondary: #E98074;
+  --color-tan: #D8C3A5;
+  --on-primary: #FFFFFF;
+
+  /* Status Colors */
+  --status-available: #4F8A5B;
+  --status-reserved: #C28A2C;
+  --status-active: #E85A4F;
+  --status-error: #B8433A;
+
+  /* Typography */
+  --text-strong: #3B3632;
+  --text-body: #57524C;
+  --text-muted: #6F6A64;
+
+  /* UI Tokens */
+  --border-soft: rgba(142, 141, 138, 0.32);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  
+  --transition-fast: color 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: color 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  font-family: var(--font-family);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  font-family: var(--font-family);
+  background-color: var(--bg-deep);
+  color: var(--text-strong);
+  overflow-x: hidden;
+}
+
+button, input, select {
+  font-family: inherit;
+  outline: none;
+}
