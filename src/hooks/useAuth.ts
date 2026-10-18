@@ -1,8 +1,15 @@
-import { useContext } from 'react'
+import { useCallback, useContext } from 'react'
 import { useMutation } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import { identityService } from '@/api/identity.service'
 import type { AccountRole } from '@/types/identity.dto'
-import { AuthContext, type LoginInput, type OtpLoginInput } from '@/providers/auth-context'
+import {
+  AuthContext,
+  type GoogleLoginInput,
+  type LoginInput,
+  type OtpLoginInput,
+  type TwoFactorInput,
+} from '@/providers/auth-context'
 
 export function useAuth() {
   const context = useContext(AuthContext)
@@ -10,9 +17,37 @@ export function useAuth() {
   return context
 }
 
+/**
+ * Signs out and lands on the public homepage. The navigation is committed first (flushSync,
+ * not a transition): clearing the session while a protected page is still mounted would let
+ * its guard redirect to /login.
+ */
+export function useSignOut() {
+  const { logout } = useAuth()
+  const navigate = useNavigate()
+  return useCallback(async () => {
+    await navigate('/', { replace: true, flushSync: true })
+    logout()
+  }, [logout, navigate])
+}
+
 export function useLogin() {
   const { login } = useAuth()
   return useMutation({ mutationFn: (input: LoginInput) => login(input) })
+}
+
+export function useGoogleLogin() {
+  const { loginWithGoogle } = useAuth()
+  return useMutation({ mutationFn: (input: GoogleLoginInput) => loginWithGoogle(input) })
+}
+
+export function useVerifyTwoFactor() {
+  const { verifyTwoFactor } = useAuth()
+  return useMutation({ mutationFn: (input: TwoFactorInput) => verifyTwoFactor(input) })
+}
+
+export function useResendTwoFactor() {
+  return useMutation({ mutationFn: identityService.resendTwoFactor })
 }
 
 export function useRequestLoginOtp() {
@@ -30,7 +65,10 @@ export function useRegister() {
 
 /** Landing page for a role after sign-in. */
 export function homePathFor(role: AccountRole | undefined): string {
-  return role === 'ADMIN' ? '/admin' : role === 'MANAGER' ? '/management/lots' : '/me'
+  if (role === 'ADMIN') return '/admin'
+  if (role === 'MANAGER') return '/management/console'
+  if (role === 'STAFF') return '/staff/gate'
+  return '/me'
 }
 
 const ROLE_LABELS: Record<AccountRole, string> = {

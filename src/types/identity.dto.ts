@@ -7,9 +7,13 @@ import type { EntityRef, PageQuery } from './common.dto'
 /** Account roles, normalized to UPPER_SNAKE on the client (backend sends "Admin", "User"…). */
 export type AccountRole = 'ADMIN' | 'MANAGER' | 'STAFF' | 'USER'
 
-/** POST /Users/authenticate — PMS.Application.Models.User.LoginUserModel */
+/**
+ * POST /Users/authenticate — PMS.Application.Models.User.LoginUserModel.
+ * Customers sign in with an email, Manager/Staff accounts may use their username.
+ */
 export interface LoginCommand {
-  email: string
+  email?: string
+  username?: string
   password: string
 }
 
@@ -31,8 +35,39 @@ export interface LoginResponseDTO {
   email: string
   phoneNumber: string
   role: string
-  token: string
+  /** Null while a second factor is still required. */
+  token: string | null
+  /** Activated Manager/Staff accounts must confirm a code emailed to them. */
+  requiresTwoFactor?: boolean
+  /** Short-lived challenge token for /Users/two-factor; never a bearer token. */
+  twoFactorToken?: string | null
+  /** Masked email the code was sent to. */
+  destination?: string | null
 }
+
+/** POST /Users/login-google: the ID token from Google Identity Services. The first sign-in creates the account. */
+export interface GoogleLoginCommand {
+  idToken: string
+}
+
+/** POST /Users/two-factor — PMS.Application.Models.User.TwoFactorLoginModel */
+export interface TwoFactorLoginCommand {
+  twoFactorToken: string
+  code: string
+}
+
+/** POST /Users/two-factor/resend — ResendTwoFactorModel / ResendTwoFactorResponseModel */
+export interface ResendTwoFactorCommand {
+  twoFactorToken: string
+}
+
+export interface ResendTwoFactorResponseDTO {
+  succeeded: boolean
+  twoFactorToken: string | null
+  destination: string | null
+  message: string | null
+}
+
 
 /** POST /Users/register — PMS.Application.Models.User.CreateUserModel */
 export interface RegisterCommand {
@@ -49,8 +84,8 @@ export interface RegisterResponseDTO {
 }
 
 /* ------------------------------------------------------------------ */
-/* Staff account management (Identity service, /v1/identity/staff)     */
-/* Not implemented by the backend yet: served from mocks/users.mock.ts. */
+/* Staff account management (PMS.API AdminController, /admin)          */
+/* Editing details and password resets have no endpoint yet: mock only. */
 /* ------------------------------------------------------------------ */
 
 export type UserRole = 'MANAGER' | 'STAFF'
@@ -78,9 +113,31 @@ export interface UserDTO {
 export interface CustomerAccountDTO {
   id: string
   userName: string
+  fullName?: string | null
   email: string
   phoneNumber: string
   role: string
+  isActive?: boolean
+}
+
+/** PMS.Application.Models.User.UserResponseModel, as returned by GET /admin/users. */
+export interface InternalUserResponseDTO {
+  id: string
+  userName: string
+  fullName: string | null
+  email: string
+  phoneNumber: string | null
+  role: string
+  employeeCode: string | null
+  isActive: boolean
+  /** Employee record creation time; null for customers. */
+  createdAt: string | null
+}
+
+/** PMS.Application.Models.User.CreateUserResponseModel for POST /admin/managers and /admin/staff. */
+export interface CreateEmployeeResponseDTO {
+  id: string
+  employeeCode: string | null
 }
 
 export interface CustomerListQuery extends PageQuery {
